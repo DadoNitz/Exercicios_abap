@@ -1,0 +1,72 @@
+*&---------------------------------------------------------------------*
+*& Report ZR0012
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zr0012.
+
+*declaração de variaveis
+data: v_resul type I.
+
+*tela de seleção
+PARAMETERS: p_num1 TYPE i,
+            p_num2 TYPE i,
+            p_oper TYPE c.
+
+START-OF-SELECTION.
+
+  PERFORM f_executa_calculo.
+  PERFORM F_IMPRIME_RESULTADO.
+*&---------------------------------------------------------------------*
+*& Form F_EXECUTA_CALCULO
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_executa_calculo .
+  CALL FUNCTION 'Z_F0001'
+    EXPORTING
+      numero1  = p_num1
+      numero2  = p_num2
+      operacao = p_oper
+ IMPORTING
+     RESULTADO          = v_resul
+ EXCEPTIONS
+     INV_OPERADOR       = 1
+     DIVI_ZERO          = 2
+     OTHERS             = 3.
+
+  IF sy-subrc <> 0.
+
+ IF SY-SUBRC = 1.
+   MESSAGE TEXT-001 TYPE 'I'.
+   STOP.
+
+ELSEIF SY-SUBRC = 2.
+   MESSAGE TEXT-002 TYPE 'I'.
+   STOP.
+
+   ELSE.
+       MESSAGE TEXT-003 TYPE 'I'.
+       STOP.
+
+    ENDIF.
+
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form F_IMPRIME_RESULTADO
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_imprime_resultado .
+
+WRITE: TEXT-004, V_RESUL.
+
+ENDFORM.
